@@ -40,3 +40,5 @@ See these rule files for detailed requirements:
 - `rules/sink-files.md`
 - `rules/copy-files.md`
 - `rules/connection-files.md`
+
+After making changes in the project files, check `rules/build-deploy.md` for next steps.
