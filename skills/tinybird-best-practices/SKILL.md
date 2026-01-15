@@ -18,7 +18,7 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 
 - `rules/tools.md`
 - `rules/planning.md`
-- `rules/datafiles.md`
+- `rules/project-files.md`
 - `rules/datasource-files.md`
 - `rules/pipe-files.md`
 - `rules/endpoint-files.md`
@@ -29,7 +29,7 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 - `rules/sql.md`
 - `rules/endpoint-optimization.md`
 - `rules/explore-and-diff.md`
-- `rules/mock-and-append.md`
+- `rules/append-data.md`
 - `rules/tests.md`
 - `rules/secrets.md`
 - `rules/tokens.md`
@@ -44,4 +44,3 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 - Plan before create/update/delete operations; skip plan for single-step work.
 - Project local files are the source of truth; build for Local, deploy for Cloud.
 - SQL is SELECT-only with Tinybird templating rules and strict parameter handling.
-- Use mock/append tools only when explicitly required for landing data.
