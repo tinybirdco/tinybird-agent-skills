@@ -16,10 +16,8 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 
 ## Rule Files
 
-- `rules/tools.md`
-- `rules/planning.md`
-- `rules/project-files.md
-- `rules/build.md``
+- `rules/project-files.md`
+- `rules/build-deploy.md`
 - `rules/datasource-files.md`
 - `rules/pipe-files.md`
 - `rules/endpoint-files.md`
@@ -29,16 +27,13 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 - `rules/connection-files.md`
 - `rules/sql.md`
 - `rules/endpoint-optimization.md`
-- `rules/explore-and-diff.md`
 - `rules/append-data.md`
 - `rules/tests.md`
 - `rules/secrets.md`
 - `rules/tokens.md`
 - `rules/endpoint-urls.md`
-- `rules/resources-context.md`
 - `rules/cli-commands.md`
 - `rules/local-development.md`
-- `rules/style.md`
 
 ## Quick Reference
 
