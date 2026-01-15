@@ -18,7 +18,8 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 
 - `rules/tools.md`
 - `rules/planning.md`
-- `rules/project-files.md`
+- `rules/project-files.md
+- `rules/build.md``
 - `rules/datasource-files.md`
 - `rules/pipe-files.md`
 - `rules/endpoint-files.md`
