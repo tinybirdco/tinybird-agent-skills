@@ -37,6 +37,5 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 
 ## Quick Reference
 
-- Plan before create/update/delete operations; skip plan for single-step work.
 - Project local files are the source of truth; build for Local, deploy for Cloud.
 - SQL is SELECT-only with Tinybird templating rules and strict parameter handling.
