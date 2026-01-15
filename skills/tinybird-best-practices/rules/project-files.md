@@ -4,7 +4,19 @@
 
 - By default, create a `tinybird/` folder at the project root and nest Tinybird folders under it.
 - Ensure the `.tinyb` credentials file is at the same level where the CLI commands are run.
-- If credentials issues occur, run `tb info` to see where the CLI is loading the `.tinyb` file from and the current working workspace.
+
+## tb info
+
+Use `tb info` to confirm CLI context, especially for credentials issues.
+
+It reports information about Local and Cloud environments:
+- Where the CLI is loading the `.tinyb` file from
+- Current logged workspace
+- API URL
+- UI URL
+- ClickHouse HTTP interface URL
+
+It can show values for both Cloud and Local environments.
 
 ## File Locations
 
