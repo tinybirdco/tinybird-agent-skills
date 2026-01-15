@@ -39,3 +39,5 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 
 - Project local files are the source of truth; build for Local, deploy for Cloud.
 - SQL is SELECT-only with Tinybird templating rules and strict parameter handling.
+- Use `tb info` to check CLI context.
+- CLI commands by default target Local; use `tb --cloud <command>` to target Cloud (production).
