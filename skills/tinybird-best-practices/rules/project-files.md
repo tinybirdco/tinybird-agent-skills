@@ -1,6 +1,14 @@
-# Datafile Rules
+# Project Files
+
+## Project Root
+
+- By default, create a `tinybird/` folder at the project root and nest Tinybird folders under it.
+- Ensure the `.tinyb` credentials file is at the same level where the CLI commands are run.
+- If credentials issues occur, run `tb info` to see where the CLI is loading the `.tinyb` file from and the current working workspace.
 
 ## File Locations
+
+Default locations (use these unless the project uses a different structure):
 
 - Endpoints: `/endpoints`
 - Materialized pipes: `/materializations`
