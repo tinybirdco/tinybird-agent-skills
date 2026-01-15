@@ -1,0 +1,25 @@
+# Tinybird CLI useful commands
+
+- `tb connection ls`: List all connections
+- `tb copy ls`: List all copy pipes
+- `tb copy run [pipe_name] --mode [mode] --param [param]`: Run a copy pipe
+- `tb datasource ls`: List all datasources
+- `tb datasource sync [datasource_name] --yes`: Sync a datasource with an S3 or GCS connection
+- `tb datasource truncate [datasource_name] --yes`: Truncate a datasource
+- `tb endpoint ls`: List all endpoints
+- `tb open`: Open the dashboard in the browser
+- `tb info`: Show project information
+- `tb job ls`: List all jobs
+- `tb job cancel [job_id]`: Cancel a job
+- `tb deployment ls`: List all deployments (use `tb --cloud` if not specified)
+- `tb deployment discard`: Discard a deployment (use `tb --cloud` if not specified)
+- `tb token ls`: List all tokens
+- `tb materialization ls`: List all materializations
+- `tb pipe ls`: List all pipes
+- `tb sink ls`: List all sinks
+- `tb workspace current`: Show the current workspace
+- `tb workspace clear --yes`: Delete all resources in the workspace (Tinybird Local only)
+- `tb workspace ls`: List all workspaces
+- `tb local start --skip-new-version`: Start Tinybird Local container
+- `tb local restart --skip-new-version --yes`: Restart Tinybird Local container
+- `tb pull --only-vendored`: Pull only vendored datasources from other workspaces
