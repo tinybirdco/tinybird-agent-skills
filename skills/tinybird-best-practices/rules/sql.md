@@ -60,7 +60,7 @@ FROM iceberg('s3://bucket/path/to/table', {{tb_secret('aws_access_key_id')}}, {{
 
 Postgres:
 ```
-FROM postgresql({{ tb_secret("db_host_port") }}, 'database', 'table', {{tb_secret('db_username')}}, {{tb_secret('db_password')}}), 'schema_optional')
+FROM postgresql({{ tb_secret("db_host_port") }}, 'database', 'table', {{tb_secret('db_username')}}, {{tb_secret('db_password')}}, 'schema_optional')
 ```
 
 Do not split host and port into multiple secrets.
