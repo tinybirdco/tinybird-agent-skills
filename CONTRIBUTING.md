@@ -5,7 +5,7 @@ Welcome to the Tinybird Agent Skills project! 🐦
 ## Quick Links
 - **GitHub:** https://github.com/tinybirdco/tinybird-agent-skills
 - **Slack Community:** https://www.tinybird.co/community
-- **X/Twitter:** [@tinaborbird](https://x.com/tinaborbird)
+- **X/Twitter:** [@tinybird](https://x.com/tinybird)
 - **Documentation:** https://www.tinybird.co/docs
 
 ## How to Contribute
