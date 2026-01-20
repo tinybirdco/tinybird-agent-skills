@@ -1,25 +1,128 @@
-# Tinybird CLI useful commands
+# Tinybird CLI Commands
+
+**⚠️ Never invent commands or flags.** If you are unsure whether a command or flag exists, run `tb <command> --help` to verify before using it. Only use commands and flags documented here or confirmed via `--help`.
+
+## Global Options
+
+- `tb --cloud <command>`: Run command against Cloud (production)
+- `tb --local <command>`: Run command against Local (default)
+- `tb --branch <branch_name> <command>`: Run command against a specific branch
+- `tb --debug <command>`: Print debug information
+
+## Project & Development
+
+- `tb create`: Initialize a new project
+- `tb create --prompt "description"`: Create project from AI prompt
+- `tb info`: Show project information and CLI context
+- `tb build`: Validate and build the project
+- `tb build --watch`: Build and watch for changes
+- `tb dev`: Build and watch for changes with live reload
+- `tb dev --ui`: Connect local project to Tinybird UI
+- `tb open`: Open workspace in the browser
+- `tb fmt <file>`: Format a .datasource, .pipe, or .connection file
+- `tb fmt <file> --diff`: Show diff without modifying file
+
+## Deploy & Deployments
+
+- `tb deploy`: Deploy the project
+- `tb deploy --wait`: Wait for deployment to finish
+- `tb deploy --check`: Validate deployment without actually creating
+- `tb deployment ls`: List all deployments
+- `tb deployment create`: Create a staging deployment and validate before promoting
+- `tb deployment promote`: Promote a staging deployment to production
+- `tb deployment discard`: Discard a pending deployment
+
+## Data Sources
+
+- `tb datasource ls`: List all data sources
+- `tb datasource append <name> --file <path>`: Append data from local file
+- `tb datasource append <name> --url <url>`: Append data from URL
+- `tb datasource append <name> --events '<json>'`: Append JSON events
+- `tb datasource replace <name> <file_or_url>`: Full replace of data source
+- `tb datasource replace <name> <file_or_url> --sql-condition "<condition>"`: Selective replace
+- `tb datasource delete <name> --sql-condition "<condition>"`: Delete matching rows
+- `tb datasource delete <name> --sql-condition "<condition>" --wait`: Delete and wait for completion
+- `tb datasource truncate <name> --yes`: Delete all rows
+- `tb datasource truncate <name> --cascade --yes`: Truncate including dependent MVs
+- `tb datasource sync <name> --yes`: Sync from S3/GCS connection
+- `tb datasource export <name> --format csv`: Export data to file
+
+## Pipes & Endpoints
+
+- `tb pipe ls`: List all pipes
+- `tb endpoint ls`: List all endpoints
+- `tb endpoint data <pipe_name>`: Get data from endpoint
+- `tb endpoint data <pipe_name> --param_name value`: Get data with parameters
+- `tb endpoint stats <pipe_name>`: Show endpoint stats for last 7 days
+- `tb endpoint url <pipe_name>`: Print endpoint URL
+- `tb endpoint token <pipe_name>`: Get token to read endpoint
+
+## SQL Queries
+
+- `tb sql "<query>"`: Run SQL query
+- `tb sql "<query>" --stats`: Run query and show stats
+- `tb sql --pipe <path> --node <node_name>`: Run SQL from a specific pipe node
+
+## Materializations & Copy Pipes
+
+- `tb materialization ls`: List all materializations
+- `tb copy ls`: List all copy pipes
+- `tb copy run <pipe_name>`: Run a copy pipe manually
+- `tb copy run <pipe_name> --param key=value`: Run with parameters
+
+## Testing
+
+- `tb test run`: Run the full test suite
+- `tb test run <file_or_test>`: Run specific test file or test
+- `tb test create <pipe_name>`: Create a test for a pipe
+- `tb test update <file_or_test>`: Update test expectations
+
+## Mock Data
+
+- `tb mock <datasource>`: Generate sample data for a data source
+- `tb mock <datasource> --rows 100`: Generate specific number of rows
+- `tb mock <datasource> --prompt "extra context"`: Add context for generation
+
+## Tokens & Secrets
+
+- `tb token ls`: List all tokens
+- `tb secret ls`: List all secrets
+- `tb secret set <name> <value>`: Create or update a secret
+- `tb secret rm <name>`: Delete a secret
+
+## Connections & Sinks
 
 - `tb connection ls`: List all connections
-- `tb copy ls`: List all copy pipes
-- `tb copy run [pipe_name] --mode [mode] --param [param]`: Run a copy pipe
-- `tb datasource ls`: List all datasources
-- `tb datasource sync [datasource_name] --yes`: Sync a datasource with an S3 or GCS connection
-- `tb datasource truncate [datasource_name] --yes`: Truncate a datasource
-- `tb endpoint ls`: List all endpoints
-- `tb open`: Open the dashboard in the browser
-- `tb info`: Show project information
-- `tb job ls`: List all jobs
-- `tb job cancel [job_id]`: Cancel a job
-- `tb deployment ls`: List all deployments (use `tb --cloud` if not specified)
-- `tb deployment discard`: Discard a deployment (use `tb --cloud` if not specified)
-- `tb token ls`: List all tokens
-- `tb materialization ls`: List all materializations
-- `tb pipe ls`: List all pipes
 - `tb sink ls`: List all sinks
-- `tb workspace current`: Show the current workspace
-- `tb workspace clear --yes`: Delete all resources in the workspace (Tinybird Local only)
+
+## Jobs
+
+- `tb job ls`: List all jobs
+- `tb job cancel <job_id>`: Cancel a running job
+
+## Branches (Beta)
+
+- `tb branch ls`: List all branches
+- `tb branch create <name>`: Create a new branch
+- `tb branch rm <name>`: Remove a branch
+
+## Tinybird Local
+
+- `tb local start`: Start Tinybird Local container
+- `tb local stop`: Stop Tinybird Local
+- `tb local restart --yes`: Restart Tinybird Local
+- `tb local status`: Check Tinybird Local status
+- `tb local remove`: Remove Tinybird Local completely
+- `tb local version`: Show Tinybird Local version
+
+## Workspace
+
 - `tb workspace ls`: List all workspaces
-- `tb local start --skip-new-version`: Start Tinybird Local container
-- `tb local restart --skip-new-version --yes`: Restart Tinybird Local container
-- `tb pull --only-vendored`: Pull only vendored datasources from other workspaces
+- `tb workspace current`: Show current workspace
+- `tb workspace clear --yes`: Delete all resources (Local only)
+
+## Authentication
+
+- `tb login`: Authenticate via browser
+- `tb logout`: Remove authentication
+- `tb update`: Update CLI to latest version

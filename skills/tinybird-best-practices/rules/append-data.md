@@ -20,3 +20,5 @@ Notes:
 - The command appends to an existing datasource.
 - Use `tb --cloud datasource append` to target Cloud; Local is the default.
 - For ingesting data from Kafka, S3 or GCS, see: https://www.tinybird.co/docs/forward/get-data-in/connectors
+
+You can also send POST request to v0/events (streaming) and v0/datasources (batch) endpoints.
