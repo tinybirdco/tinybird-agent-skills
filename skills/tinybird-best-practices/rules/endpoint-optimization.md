@@ -42,7 +42,7 @@ Materialized view:
 ```
 NODE materialized_view_name
 SQL >
-  SELECT toDate(timestamp) as date, customer_id, count(*) as event_count
+  SELECT toDate(timestamp) as date, customer_id, countState(*) as event_count
   FROM source_table
   GROUP BY date, customer_id
 
@@ -57,6 +57,7 @@ Optimized query:
 ```
 NODE endpoint_query
 SQL >
+  %
   SELECT date, sum(amount) as daily_total
   FROM events
   WHERE customer_id = {{ String(customer_id) }}

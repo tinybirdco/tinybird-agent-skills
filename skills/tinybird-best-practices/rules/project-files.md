@@ -28,6 +28,7 @@ Default locations (use these unless the project uses a different structure):
 - Copy pipes: `/copies`
 - Connections: `/connections`
 - Datasources: `/datasources`
+- Fixtures: `/fixtures`
 
 ## File-Specific Rules
 
