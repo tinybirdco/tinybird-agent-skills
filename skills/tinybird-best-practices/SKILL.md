@@ -28,10 +28,10 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 - `rules/sql.md`
 - `rules/endpoint-optimization.md`
 - `rules/append-data.md`
+- `rules/mock-data.md`
 - `rules/tests.md`
 - `rules/secrets.md`
 - `rules/tokens.md`
-- `rules/endpoint-urls.md`
 - `rules/cli-commands.md`
 - `rules/data-operations.md`
 - `rules/deduplication-patterns.md`
