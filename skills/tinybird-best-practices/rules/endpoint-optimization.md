@@ -10,7 +10,7 @@ Use this checklist when optimizing endpoints.
 ## Step 2: 5-Question Diagnostic
 
 1) Aggregations at query time?
-- Fix: Move to materialized views or ingestion-time transforms.
+- Fix: Move to materialized views when possible, to snapshots (copy pipes) or lambda architecture if MVs do not fit.
 
 2) Filters match sorting keys?
 - Fix: Include frequent filters in ENGINE_SORTING_KEY; order by selectivity.
@@ -35,6 +35,10 @@ Use this checklist when optimizing endpoints.
 
 - Track tinybird.pipe_stats_rt and tinybird.pipe_stats.
 - Success metrics: lower latency, lower read_bytes, improved read_bytes/write_bytes.
+
+## Query Explain
+
+- For more details, call the endpoint with explain=true parameter to understand the query plan. E.g: https://$TB_HOST/v0/pipes/endpoint_name?explain=true
 
 ## Templates
 
