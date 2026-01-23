@@ -27,6 +27,7 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 - `rules/connection-files.md`
 - `rules/sql.md`
 - `rules/endpoint-optimization.md`
+- `rules/endpoint-optimization-deep.md`
 - `rules/append-data.md`
 - `rules/mock-data.md`
 - `rules/tests.md`
