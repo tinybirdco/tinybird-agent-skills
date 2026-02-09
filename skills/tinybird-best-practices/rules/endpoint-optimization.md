@@ -12,6 +12,9 @@ Before optimizing, collect evidence from these sources:
 
 Ignore datasources with fewer than 10,000 rows or less than 50 MB of data.
 
+1) Aggregations at query time?
+- Fix: Move to materialized views when possible, to snapshots (copy pipes) or lambda architecture if MVs do not fit.
+
 ## Structural Rules
 
 Schema, query-shape, or data-layout issues. Apply whenever detected — no runtime evidence needed.
@@ -112,6 +115,11 @@ Apply only when runtime thresholds are exceeded, based on `pipe_stats_rt` and `E
 
 - Track `tinybird.pipe_stats_rt` and `tinybird.pipe_stats`.
 - Success metrics: lower latency, lower read_bytes, improved read_bytes/write_bytes ratio.
+- If for any reason these two datasources don't contain the needed information, check `system.query_log`
+
+## Query Explain
+
+- For more details, call the endpoint with explain=true parameter to understand the query plan. E.g: https://$TB_HOST/v0/pipes/endpoint_name?explain=true
 
 ## Templates
 
