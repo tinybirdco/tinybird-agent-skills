@@ -18,13 +18,13 @@ Guidance for using the `@tinybirdco/sdk` package to define Tinybird resources in
 
 ## Rule Files
 
-- `rules/sdk-overview.md`
-- `rules/sdk-configuration.md`
-- `rules/sdk-datasources.md`
-- `rules/sdk-endpoints.md`
-- `rules/sdk-client.md`
-- `rules/sdk-api.md`
-- `rules/sdk-cli.md`
+- `rules/getting-started.md`
+- `rules/configuration.md`
+- `rules/defining-datasources.md`
+- `rules/defining-endpoints.md`
+- `rules/typed-client.md`
+- `rules/low-level-api.md`
+- `rules/cli-commands.md`
 
 ## Quick Reference
 
