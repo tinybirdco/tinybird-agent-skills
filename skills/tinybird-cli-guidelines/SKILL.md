@@ -1,9 +1,9 @@
 ---
-name: tinybird-cli
+name: tinybird-cli-guidelines
 description: Tinybird CLI commands, workflows, and operations. Use when running tb commands, managing local development, deploying, or working with data operations.
 ---
 
-# Tinybird CLI Skills
+# Tinybird CLI Guidelines
 
 Guidance for using the Tinybird CLI (tb) for local development, deployments, data operations, and workspace management.
 

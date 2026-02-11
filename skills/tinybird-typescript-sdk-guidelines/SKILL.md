@@ -1,9 +1,9 @@
 ---
-name: tinybird-typescript-sdk
+name: tinybird-typescript-sdk-guidelines
 description: Tinybird TypeScript SDK for defining datasources, pipes, and queries with full type inference. Use when working with @tinybirdco/sdk, TypeScript Tinybird projects, or type-safe data ingestion and queries.
 ---
 
-# Tinybird TypeScript SDK Skills
+# Tinybird TypeScript SDK Guidelines
 
 Guidance for using the `@tinybirdco/sdk` package to define Tinybird resources in TypeScript with complete type inference.
 
