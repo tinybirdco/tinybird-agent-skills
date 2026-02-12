@@ -1,23 +1,24 @@
 ---
 name: tinybird
-description: Tinybird Code agent tools and prompts for working with Tinybird projects, datafiles, queries, deployments, and tests.
+description: Tinybird file formats, SQL rules, optimization patterns, and best practices for datasources, pipes, endpoints, and materialized views.
 ---
 
-# Tinybird Agent Skills
+# Tinybird Best Practices
 
-Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). Use this skill when working in Tinybird projects, editing datafiles, running build/deploy flows, exploring data, or managing tests/secrets.
+Guidance for Tinybird file formats, SQL rules, optimization patterns, and data modeling. Use this skill when creating or editing Tinybird datafiles.
 
 ## When to Apply
 
 - Creating or updating Tinybird resources (.datasource, .pipe, .connection)
-- Working with queries, endpoints, or data exploration
-- Managing Tinybird deployments, secrets, or tests
+- Writing or optimizing SQL queries
+- Designing endpoint schemas and data models
+- Working with materialized views or copy pipes
+- Implementing deduplication patterns
 - Reviewing or refactoring Tinybird project files
 
 ## Rule Files
 
 - `rules/project-files.md`
-- `rules/build-deploy.md`
 - `rules/datasource-files.md`
 - `rules/pipe-files.md`
 - `rules/endpoint-files.md`
@@ -27,19 +28,12 @@ Reusable guidance extracted from Tinybird Code (the Tinybird CLI coding agent). 
 - `rules/connection-files.md`
 - `rules/sql.md`
 - `rules/endpoint-optimization.md`
-- `rules/append-data.md`
-- `rules/mock-data.md`
 - `rules/tests.md`
-- `rules/secrets.md`
-- `rules/tokens.md`
-- `rules/cli-commands.md`
-- `rules/data-operations.md`
 - `rules/deduplication-patterns.md`
-- `rules/local-development.md`
 
 ## Quick Reference
 
-- Project local files are the source of truth; build for Local, deploy for Cloud.
+- Project local files are the source of truth.
 - SQL is SELECT-only with Tinybird templating rules and strict parameter handling.
-- Use `tb info` to check CLI context.
-- CLI commands by default target Local; use `tb --cloud <command>` to target Cloud (production) and `tb --branch <branch-name> <command>` to target a specific branch in Cloud.
+- Use MergeTree by default; AggregatingMergeTree for materialized targets.
+- Filter early, select only needed columns, push complex work later in the pipeline.
