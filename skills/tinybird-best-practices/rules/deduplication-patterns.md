@@ -52,7 +52,9 @@ Use Copy Pipes when:
 - ReplacingMergeTree + FINAL is too slow
 - You need different sorting keys that change with updates
 - You need downstream Materialized Views for rollups
-- Full replace with COPY_MODE replace if table is not massive and you don't have control over when duplicates can occur. If you have control, use COPY_MODE append.
+- The default `copy_mode` is `append`.
+- Use `COPY_MODE replace` for full refreshes when the table is not massive and you don't control when duplicates can occur.
+- Keep `COPY_MODE append` (default) when you do control duplicate generation and can process incrementally.
 
 ```
 NODE generate_snapshot
