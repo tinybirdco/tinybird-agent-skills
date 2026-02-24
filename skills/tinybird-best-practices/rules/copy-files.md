@@ -4,6 +4,7 @@
 - Create under `/copies`.
 - Do not include COPY_SCHEDULE unless explicitly requested.
 - Use TYPE COPY and TARGET_DATASOURCE.
+- The default `copy_mode` is `append`; but it's better if you set it explicitly. The other option is `replace`
 
 Example:
 
@@ -22,4 +23,5 @@ SQL >
 TYPE COPY
 TARGET_DATASOURCE sales_hour_copy
 COPY_SCHEDULE 0 * * * *
+COPY_MODE append
 ```
