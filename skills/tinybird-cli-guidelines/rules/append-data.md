@@ -9,7 +9,7 @@ tb datasource append [datasource_name] --file /path/to/local/file
 ```
 
 ```
-tb datasource append [datasource_name] --url https://url_to_csv
+tb datasource append [datasource_name] --url https://example.com/data.csv
 ```
 
 ```
