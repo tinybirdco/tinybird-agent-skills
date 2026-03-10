@@ -15,6 +15,8 @@ Guidance for using the `@tinybirdco/sdk` package to define Tinybird resources in
 - Using type-safe ingestion or queries
 - Running tinybird dev/build/deploy commands for TypeScript projects
 - Migrating from legacy .datasource/.pipe files to TypeScript
+- Defining connections (Kafka, S3, GCS)
+- Creating materialized views, copy pipes, or sink pipes
 
 ## Rule Files
 
@@ -25,6 +27,10 @@ Guidance for using the `@tinybirdco/sdk` package to define Tinybird resources in
 - `rules/typed-client.md`
 - `rules/low-level-api.md`
 - `rules/cli-commands.md`
+- `rules/connections.md`
+- `rules/materialized-views.md`
+- `rules/copy-sink-pipes.md`
+- `rules/tokens.md`
 
 ## Quick Reference
 

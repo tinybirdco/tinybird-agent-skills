@@ -14,6 +14,18 @@ npx tinybird init --skip-login     # Skip browser authentication
 
 Detects existing `.datasource` and `.pipe` files for incremental migration.
 
+## tinybird migrate
+
+Migrate legacy datafiles to TypeScript definitions:
+
+```bash
+tinybird migrate "tinybird/**/*.datasource" "tinybird/**/*.pipe" "tinybird/**/*.connection"
+tinybird migrate tinybird/legacy --out ./tinybird.migration.ts
+tinybird migrate tinybird --dry-run
+```
+
+Converts `.datasource`, `.pipe`, and `.connection` files into a TypeScript definitions file.
+
 ## tinybird dev
 
 Watch schema files and auto-sync to Tinybird:
@@ -45,9 +57,21 @@ Deploy resources to the main workspace (production):
 ```bash
 tinybird deploy                    # Deploy to main/production
 tinybird deploy --dry-run          # Preview without deploying
+tinybird deploy --check            # Validate without applying changes
+tinybird deploy --allow-destructive-operations  # Allow breaking changes
 ```
 
 This is the only way to deploy to main.
+
+## tinybird pull
+
+Download cloud resources as native datafiles:
+
+```bash
+tinybird pull                      # Pull to default location
+tinybird pull --output-dir ./tinybird-datafiles
+tinybird pull --force              # Overwrite existing files
+```
 
 ## tinybird login
 
