@@ -30,7 +30,9 @@ Guidance for using the Tinybird CLI (tb) for local development, deployments, dat
 
 ## Quick Reference
 
-- CLI commands by default target Local; use `tb --cloud <command>` to target Cloud.
+- CLI 4.0 workflow: configure `dev_mode` once, then use plain `tb build` and `tb deploy`.
+- `tb build` targets your configured development environment (`branch` or `local`) in tinybird.config.json
+- `tb deploy` targets Tinybird Cloud production.
+- Use `--cloud`/`--local`/`--branch` only as explicit manual overrides.
 - Use `tb info` to check CLI context.
-- Use `tb --branch <branch-name> <command>` to target a specific branch in Cloud.
 - Never invent commands or flags; run `tb <command> --help` to verify.

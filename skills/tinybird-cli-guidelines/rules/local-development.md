@@ -3,8 +3,8 @@
 ## Overview
 
 - Tinybird Local runs as a Docker container managed by the Tinybird CLI.
-- Local is the default execution target; use `--cloud` to operate on Cloud.
-- Use Tinybird Local to develop and test projects before deploying to Cloud.
+- In CLI 4.0, `tb build` uses `dev_mode` from `tinybird.config.json`.
+- Use Tinybird Local for fast local iteration (`dev_mode=local`), then deploy with `tb deploy`.
 
 ## Commands
 
@@ -20,14 +20,15 @@
 
 Notes:
 - If you remove the container without a persisted volume, local data is lost.
-- Use `tb --cloud ...` for Cloud operations.
+- Manual flags (`--local`, `--cloud`, `--branch`) still work as overrides.
 
 ## Local-First Workflow
 
 1) `tb local start`
-2) Develop resources and run `tb build` as needed
-3) Test endpoints/queries locally
-4) Use `--cloud` for Cloud actions (deploy, etc.)
+2) Set `dev_mode` to `local` in `tinybird.config.json`
+3) Develop resources and run `tb build` as needed
+4) Test endpoints/queries locally
+5) Run `tb deploy` only when user explicitly requests production deployment
 
 Use `--volumes-path` to persist data between restarts.
 

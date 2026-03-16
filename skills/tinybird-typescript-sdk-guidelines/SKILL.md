@@ -36,6 +36,8 @@ Guidance for using the `@tinybirdco/sdk` package to define Tinybird resources in
 
 - Install: `npm install @tinybirdco/sdk`
 - Initialize: `npx tinybird init`
-- Dev mode: `tinybird dev` (watches and syncs to branches, not main)
+- Dev mode: `tinybird dev` (uses configured `devMode`, typically branch)
+- Build: `tinybird build` (builds against configured dev target)
 - Deploy: `tinybird deploy` (deploys to main/production)
+- Preview in CI: `tinybird preview`
 - Server-side only; never expose tokens in browsers

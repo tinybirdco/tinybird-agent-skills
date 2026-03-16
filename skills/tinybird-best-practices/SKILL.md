@@ -19,6 +19,7 @@ Guidance for Tinybird file formats, SQL rules, optimization patterns, and data m
 ## Rule Files
 
 - `rules/project-files.md`
+- `rules/build-deploy.md`
 - `rules/datasource-files.md`
 - `rules/pipe-files.md`
 - `rules/endpoint-files.md`
@@ -34,6 +35,9 @@ Guidance for Tinybird file formats, SQL rules, optimization patterns, and data m
 ## Quick Reference
 
 - Project local files are the source of truth.
+- Build target comes from `tinybird.config.json` `dev_mode` (`local` or `branch`).
+- `tb deploy` targets Tinybird Cloud production.
+- Commands like `tb sql` and `tb logs` default to local unless `--cloud` or `--branch=<branch-name>` is set.
 - SQL is SELECT-only with Tinybird templating rules and strict parameter handling.
 - Use MergeTree by default; AggregatingMergeTree for materialized targets.
 - Filter early, select only needed columns, push complex work later in the pipeline.

@@ -36,7 +36,9 @@ Guidance for using the `tinybird-sdk` package to define Tinybird resources in Py
 
 - Install: `pip install tinybird-sdk`
 - Initialize: `tinybird init`
-- Dev mode: `tinybird dev` (watches and syncs to branches, not main)
+- Dev mode: `tinybird dev` (uses configured `dev_mode`, typically branch)
+- Build: `tinybird build` (builds against configured dev target)
 - Deploy: `tinybird deploy` (deploys to main/production)
+- Preview in CI: `tinybird preview`
 - Migrate: `tinybird migrate` (convert .datasource/.pipe files to Python)
 - Server-side only; never expose tokens in browsers

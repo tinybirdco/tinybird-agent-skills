@@ -2,22 +2,28 @@
 
 **⚠️ Never invent commands or flags.** If you are unsure whether a command or flag exists, run `tb <command> --help` to verify before using it. Only use commands and flags documented here or confirmed via `--help`.
 
-## Global Options
+## Build/Deploy Context (CLI 4.0)
 
-- `tb --cloud <command>`: Run command against Cloud (production)
-- `tb --local <command>`: Run command against Local (default)
+- Preferred flow: configure `dev_mode` once, then run plain `tb build` and `tb deploy`.
+- Use `--cloud`, `--local`, and `--branch` only as explicit manual overrides.
+
+## Global Overrides
+
+- `tb --cloud <command>`: Run command against Cloud
+- `tb --local <command>`: Run command against Local
 - `tb --branch <branch_name> <command>`: Run command against a specific branch
 - `tb --debug <command>`: Print debug information
 
 ## Project & Development
 
-- `tb create`: Initialize a new project
-- `tb create --prompt "description"`: Create project from AI prompt
+- `tb init`: Initialize a new project
+- `tb create`: Deprecated alias for `tb init`
 - `tb info`: Show project information and CLI context
 - `tb build`: Validate and build the project
 - `tb build --watch`: Build and watch for changes
-- `tb dev`: Build and watch for changes with live reload
+- `tb dev`: Build and watch for changes
 - `tb dev --ui`: Connect local project to Tinybird UI
+- `tb preview`: Create/update preview environment for the current branch
 - `tb open`: Open workspace in the browser
 - `tb fmt <file>`: Format a .datasource, .pipe, or .connection file
 - `tb fmt <file> --diff`: Show diff without modifying file
@@ -25,12 +31,19 @@
 ## Deploy & Deployments
 
 - `tb deploy`: Deploy the project
-- `tb deploy --wait`: Wait for deployment to finish
 - `tb deploy --check`: Validate deployment without actually creating
+- `tb deploy --wait`: Wait for deployment to finish
+- `tb deploy --allow-destructive-operations`: Allow destructive changes (requires explicit confirmation)
 - `tb deployment ls`: List all deployments
 - `tb deployment create`: Create a staging deployment and validate before promoting
 - `tb deployment promote`: Promote a staging deployment to production
 - `tb deployment discard`: Discard a pending deployment
+
+## Logs
+
+- `tb logs`: Show recent logs from common service datasources
+- `tb logs --start -30m --source '*'`: Query all sources for a custom time range
+- `tb logs --output json`: Emit logs as JSON for scripting
 
 ## Data Sources
 
@@ -74,14 +87,12 @@
 
 - `tb test run`: Run the full test suite
 - `tb test run <file_or_test>`: Run specific test file or test
-- `tb test create <pipe_name>`: Create a test for a pipe
 - `tb test update <file_or_test>`: Update test expectations
 
 ## Mock Data
 
-- `tb mock <datasource>`: Generate sample data for a data source
-- `tb mock <datasource> --rows 100`: Generate specific number of rows
-- `tb mock <datasource> --prompt "extra context"`: Add context for generation
+- `tb mock` was removed in CLI 4.0
+- Use the `fixtures/` folder and agent skills to generate sample data, then append with `tb datasource append`
 
 ## Tokens & Secrets
 
@@ -100,11 +111,12 @@
 - `tb job ls`: List all jobs
 - `tb job cancel <job_id>`: Cancel a running job
 
-## Branches (Beta)
+## Branches
 
 - `tb branch ls`: List all branches
 - `tb branch create <name>`: Create a new branch
 - `tb branch rm <name>`: Remove a branch
+- `tb branch clear`: Clear branch state
 
 ## Tinybird Local
 
@@ -114,12 +126,13 @@
 - `tb local status`: Check Tinybird Local status
 - `tb local remove`: Remove Tinybird Local completely
 - `tb local version`: Show Tinybird Local version
+- `tb local clear`: Clear local workspace state
 
 ## Workspace
 
 - `tb workspace ls`: List all workspaces
 - `tb workspace current`: Show current workspace
-- `tb workspace clear --yes`: Delete all resources (Local only)
+- `tb workspace clear --yes`: Clear workspace state
 
 ## Authentication
 
