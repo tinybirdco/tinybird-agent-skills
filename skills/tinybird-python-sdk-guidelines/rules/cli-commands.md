@@ -2,6 +2,13 @@
 
 The SDK installs `tinybird` as a runtime dependency. Some commands are handled by the SDK; others delegate to the Tinybird CLI.
 
+## CLI 4.0 Build/Deploy Model
+
+- Configure your default development target once in `tinybird.config.*` (`dev_mode`).
+- Run `tinybird build` without environment flags for normal workflows.
+- Run `tinybird deploy` to publish to Tinybird Cloud main.
+- Use `--local`/`--branch` only as explicit overrides.
+
 ## tinybird init
 
 Initialize a new Tinybird project:
@@ -31,25 +38,25 @@ Converts `.datasource`, `.pipe`, and `.connection` files into a Python definitio
 Watch schema files and auto-sync to Tinybird:
 
 ```bash
-tinybird dev                   # Default: sync with cloud branches
+tinybird dev                   # Watch and sync using configured dev_mode
 tinybird dev --local           # Sync with local container
-tinybird dev --branch          # Explicitly use cloud branches
+tinybird dev --branch          # Force branch mode for this run
 ```
 
-**Important**: Dev mode only works with feature branches, not main. This prevents accidental production changes.
+**Important**: In branch mode, feature branches are expected; main/master are blocked to prevent accidental production changes.
 
 ## tinybird build
 
-Build and push resources to a Tinybird branch:
+Build and validate resources using your configured development target:
 
 ```bash
-tinybird build                 # Build and push to branch
-tinybird build --dry-run       # Preview without pushing
+tinybird build                 # Build to dev_mode target (branch or local)
+tinybird build --dry-run       # Preview build operations
 tinybird build --local         # Build to local container
-tinybird build --branch        # Explicitly use cloud branches
+tinybird build --branch        # Build to branch for this run
 ```
 
-**Important**: Build targets branches only, not main.
+Use `tinybird build` for iterative development; it does not publish to production.
 
 ## tinybird deploy
 
@@ -57,11 +64,23 @@ Deploy resources to the main workspace (production):
 
 ```bash
 tinybird deploy                # Deploy to main/production
+tinybird deploy --dry-run      # Preview without deploying
 tinybird deploy --check        # Validate without deploying
+tinybird deploy --wait         # Wait for deployment completion
 tinybird deploy --allow-destructive-operations  # Allow breaking changes
 ```
 
 This is the only way to deploy to main.
+
+## tinybird preview
+
+Create or refresh a CI preview environment for the current branch:
+
+```bash
+tinybird preview
+```
+
+Use this in pull request workflows so preview apps query isolated Tinybird preview branches.
 
 ## tinybird pull
 
@@ -106,9 +125,9 @@ tinybird info --json           # Output as JSON
 
 1. `tinybird init` - Initialize project
 2. Define datasources and pipes in Python
-3. `tinybird dev` - Watch and sync changes to a branch
-4. Test endpoints
-5. `tinybird deploy` - Deploy to production
+3. `tinybird build` or `tinybird dev` - Iterate against configured dev target
+4. `tinybird preview` in CI - Create preview branch environment per PR
+5. `tinybird deploy` - Deploy to production after merge
 
 ## Migration Workflow
 
@@ -120,6 +139,6 @@ tinybird info --json           # Output as JSON
 
 ## Important Notes
 
-- The `dev` command enforces feature branch restrictions to prevent production incidents
-- Use `--dry-run` to preview changes before pushing
+- The CLI auto-generates datafiles from Python definitions before `build`, `deploy`, and `preview`
+- Use `--check`/`--dry-run` before production deploys when in doubt
 - The CLI automatically loads `.env.local` and `.env` files
