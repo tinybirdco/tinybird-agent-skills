@@ -72,6 +72,24 @@ Tinybird TypeScript SDK for defining datasources, pipes, and queries with full t
 - Running tinybird dev/build/deploy commands for TypeScript projects
 - Migrating from legacy .datasource/.pipe files to TypeScript
 
+### Python SDK skills
+
+Use these when working with the `tinybird-sdk` package and Python projects.
+
+#### tinybird-python-sdk-guidelines
+
+Tinybird Python SDK for defining datasources, pipes, and queries in Python. Use when working with tinybird-sdk, Python Tinybird projects, or data ingestion and queries in Python.
+
+**Use when:**
+- Installing or configuring tinybird-sdk
+- Defining datasources, pipes, or endpoints in Python
+- Creating Tinybird clients in Python
+- Using data ingestion or queries in Python
+- Running tinybird dev/build/deploy commands for Python projects
+- Migrating from legacy .datasource/.pipe files to Python
+- Defining connections (Kafka, S3, GCS)
+- Creating materialized views, copy pipes, or sink pipes
+
 ## Usage
 
 Skills are automatically available once installed. The agent will use them when relevant tasks are detected. You can use the agent cli to check, e.g., `amp skill list`, or directly ask the agent to tell you what skills are available.
@@ -80,6 +98,7 @@ Skills are automatically available once installed. The agent will use them when 
 - Always enable `tinybird-best-practices` for general Tinybird project work.
 - Add `tinybird-cli-guidelines` whenever you plan to run `tb` commands.
 - Add `tinybird-typescript-sdk-guidelines` for TypeScript SDK projects.
+- Add `tinybird-python-sdk-guidelines` for Python SDK projects.
 
 **Examples:**
 - "Create a datasource for user events"
