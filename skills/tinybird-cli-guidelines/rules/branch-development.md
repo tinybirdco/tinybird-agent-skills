@@ -30,15 +30,17 @@ Check out a git branch and run `tb dev` or `tb build`. Tinybird automatically cr
 Manual:
 
 ```
-tb branch create my-feature
+tb branch create my_feature
 ```
+
+Branch names must use underscores, not hyphens (e.g., `my_feature`, not `my-feature`).
 
 ### The `--last-partition` Flag
 
 Use `--last-partition` to copy the latest partition of production data into the branch:
 
 ```
-tb branch create my-feature --last-partition
+tb branch create my_feature --last-partition
 ```
 
 This is useful when you need real data to test queries, validate endpoint behavior, or debug issues that depend on production data shapes. Without it, the branch starts empty.
@@ -48,10 +50,10 @@ This is useful when you need real data to test queries, validate endpoint behavi
 Use `--with-connections` to enable connectors (Kafka, S3, GCS) in the branch:
 
 ```
-tb branch create my-feature --last-partition --with-connections
+tb branch create my_feature --last-partition --with-connections
 ```
 
-For S3/GCS, import sample data with `tb --branch=my-feature datasource sample <datasource> --wait`. Kafka connections are stopped by default and need to be started explicitly with `tb --branch=my-feature datasource start <datasource>`.
+For S3/GCS, import sample data with `tb --branch=my_feature datasource sample <datasource> --wait`. Kafka connections are stopped by default and need to be started explicitly with `tb --branch=my_feature datasource start <datasource>`.
 
 ## Working with Branch Tokens
 
@@ -60,7 +62,7 @@ After creating a branch, you may need its token to connect client applications (
 List tokens for a branch:
 
 ```
-tb --branch my-feature token ls
+tb --branch my_feature token ls
 ```
 
 ### Using Branch Tokens in Client Apps
@@ -98,9 +100,9 @@ This way, setting or unsetting the branch token switches between branch and prod
 Most commands can target a specific branch with the `--branch` flag:
 
 ```
-tb --branch my-feature endpoint data my_endpoint
-tb --branch my-feature sql "SELECT count() FROM my_datasource"
-tb --branch my-feature token ls
+tb --branch my_feature endpoint data my_endpoint
+tb --branch my_feature sql "SELECT count() FROM my_datasource"
+tb --branch my_feature token ls
 ```
 
 When `dev_mode=branch`, `tb build` targets the branch automatically without needing `--branch`.

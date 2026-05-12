@@ -138,7 +138,7 @@ Preview environments create an ephemeral Tinybird branch per pull request, so yo
 
 ### Using the TypeScript or Python SDK
 
-The `tinybird preview` command (available in `@tinybirdco/sdk` and `tinybird-sdk`, not the `tb` CLI) creates a branch named `tmp-ci-<git-branch>`, builds resources, and deploys them:
+The `tinybird preview` command (available in `@tinybirdco/sdk` and `tinybird-sdk`, not the `tb` CLI) creates a branch named `tmp_ci_<git-branch>`, builds resources, and deploys them:
 
 ```yaml
 # GitHub Actions example
@@ -157,9 +157,9 @@ The `tb` CLI doesn't have a `preview` subcommand. Create preview branches manual
 
 ```yaml
 - name: Create preview branch
-  run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} branch create tmp-ci-${{ github.head_ref }} --last-partition
+  run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} branch create tmp_ci_${{ github.head_ref }} --last-partition
 - name: Build on branch
-  run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} --branch=tmp-ci-${{ github.head_ref }} build
+  run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} --branch=tmp_ci_${{ github.head_ref }} build
 ```
 
 ### Cleanup
@@ -168,10 +168,10 @@ Delete preview branches when the PR is closed:
 
 ```yaml
 # SDK
-- run: npx tinybird branch delete tmp-ci-${{ github.head_ref }}
+- run: npx tinybird branch delete tmp_ci_${{ github.head_ref }}
 
 # tb CLI
-- run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} branch rm tmp-ci-${{ github.head_ref }}
+- run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} branch rm tmp_ci_${{ github.head_ref }}
 ```
 
 ### Preview with connectors
@@ -179,19 +179,19 @@ Delete preview branches when the PR is closed:
 When your project uses Kafka, S3, or GCS connectors, the `tinybird preview` command doesn't ingest data from connectors in preview branches. To test with connector data, create the branch manually with `--with-connections`:
 
 ```
-tb branch create tmp-ci-my-feature --last-partition --with-connections
+tb branch create tmp_ci_my_feature --last-partition --with-connections
 ```
 
 For S3/GCS connectors, import sample data:
 
 ```
-tb --branch=tmp-ci-my-feature datasource sample my_datasource --wait
+tb --branch=tmp_ci_my_feature datasource sample my_datasource --wait
 ```
 
 Kafka connections are stopped by default in preview branches. Start them explicitly:
 
 ```
-tb --branch=tmp-ci-my-feature datasource start my_kafka_datasource
+tb --branch=tmp_ci_my_feature datasource start my_kafka_datasource
 ```
 
 ## Key Principles
