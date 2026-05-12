@@ -26,11 +26,20 @@ Notes:
 
 1) `tb local start`
 2) Set `dev_mode` to `local` in `tinybird.config.json`
-3) Develop resources and run `tb build` as needed
-4) Test endpoints/queries locally
+3) Run `tb dev` in a new terminal — watches for file changes and auto-rebuilds
+4) Test endpoints/queries locally with `tb endpoint data <pipe_name>`
 5) Run `tb deploy` only when user explicitly requests production deployment
 
 Use `--volumes-path` to persist data between restarts.
+
+`tb dev` is the recommended development command. It watches your project files and automatically rebuilds Data Sources and Endpoints when changes are detected.
+
+## Connecting to the Tinybird UI
+
+- `tb dev --ui`: Builds in watch mode and connects the local project to the Tinybird UI for visual exploration and debugging.
+- `tb open`: Opens the workspace in the browser.
+
+These are useful for visually inspecting query results, exploring Data Source schemas, or debugging pipe logic.
 
 ## Troubleshooting
 
