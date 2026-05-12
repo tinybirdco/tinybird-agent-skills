@@ -28,10 +28,11 @@ Example:
 
 ## `tb deploy` Targeting
 
-- `tb deploy` targets Tinybird Cloud production. This is the preferred form in CLI 4.0.
-- `tb --cloud deploy` also works but is not necessary since `deploy` always targets Cloud.
+- `tb --cloud deploy` deploys to Tinybird Cloud production. It creates a staging deployment, migrates data, and promotes to live.
+- `tb deploy` is equivalent to `tb --cloud deploy`.
 - Do not treat `tb build` as a production deployment.
-- Use `tb deploy --check` to validate a deployment without applying it. Recommended for CI.
+- Use `tb --cloud deploy --check` to validate a deployment without applying it. Recommended for CI.
+- For explicit confirmation, use `tb --cloud deployment create --wait` followed by `tb --cloud deployment promote`.
 
 ## Non-Build Command Targeting
 

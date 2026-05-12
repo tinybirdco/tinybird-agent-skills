@@ -2,15 +2,15 @@
 
 ## Recommended Pattern
 
-Use Tinybird Local in CI to build and test, then `tb deploy --check` to validate against Cloud. In CD, use `tb deploy` to deploy on merge to the main branch.
+Use Tinybird Local in CI to build and test with `tb --local build` and `tb --local test run`, then `tb --cloud deploy --check` to validate against Cloud. In CD, use `tb --cloud deploy` to deploy on merge to the main branch.
 
 ## CI: Pull Request Validation
 
 The recommended CI flow uses a Tinybird Local service container for building and testing, then validates the deployment against Cloud:
 
-1. `tb build` — build the project against Tinybird Local
-2. `tb test run` — run tests against Tinybird Local
-3. `tb deploy --check` — validate the deployment would succeed on Cloud (dry run)
+1. `tb --local build` — build the project against Tinybird Local
+2. `tb --local test run` — run tests against Tinybird Local
+3. `tb --cloud deploy --check` — validate the deployment would succeed on Cloud (dry run)
 
 The `deploy --check` step catches schema compatibility, dependency resolution, and resource naming issues before they reach production.
 
@@ -19,16 +19,16 @@ The `deploy --check` step catches schema compatibility, dependency resolution, a
 Run when changes are merged to the main branch:
 
 ```
-tb deploy
+tb --cloud deploy
 ```
 
-This deploys the current project files to the Tinybird Cloud production environment.
+This creates a staging deployment, migrates data, and promotes to live.
 
 For projects that prefer explicit confirmation, use a two-step process:
 
 ```
-tb deployment create
-tb deployment promote
+tb --cloud deployment create --wait
+tb --cloud deployment promote
 ```
 
 ## Example: GitHub Actions
@@ -58,10 +58,10 @@ jobs:
       - name: Install Tinybird CLI
         run: curl https://tinybird.co | sh
       - name: Build project
-        run: tb build
+        run: tb --local build
         working-directory: tinybird
       - name: Test project
-        run: tb test run
+        run: tb --local test run
         working-directory: tinybird
       - name: Deployment check
         run: tb --cloud --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} deploy --check
@@ -112,8 +112,8 @@ tinybird_ci:
     - export PATH="$HOME/.local/bin:$PATH"
   script:
     - cd tinybird
-    - tb build
-    - tb test run
+    - tb --local build
+    - tb --local test run
     - tb --cloud --host $TINYBIRD_HOST --token $TINYBIRD_TOKEN deploy --check
 
 tinybird_cd:
@@ -138,7 +138,7 @@ Preview environments create an ephemeral Tinybird branch per pull request, so yo
 
 ### Using the TypeScript or Python SDK
 
-The `tinybird preview` command (available in `@tinybirdco/sdk` and `tinybird-sdk`, not the `tb` CLI) creates a branch named `tmp_ci_<git_branch>`, builds resources, and deploys them:
+The `tinybird preview` command (available in `@tinybirdco/sdk` and `tinybird-sdk`, not the `tb` CLI) creates a branch named `tmp-ci-<git-branch>`, builds resources, and deploys them:
 
 ```yaml
 # GitHub Actions example
@@ -157,9 +157,9 @@ The `tb` CLI doesn't have a `preview` subcommand. Create preview branches manual
 
 ```yaml
 - name: Create preview branch
-  run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} branch create tmp_ci_${{ github.head_ref }} --last-partition
+  run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} branch create tmp-ci-${{ github.head_ref }} --last-partition
 - name: Build on branch
-  run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} --branch=tmp_ci_${{ github.head_ref }} build
+  run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} --branch=tmp-ci-${{ github.head_ref }} build
 ```
 
 ### Cleanup
@@ -168,10 +168,10 @@ Delete preview branches when the PR is closed:
 
 ```yaml
 # SDK
-- run: npx tinybird branch delete tmp_ci_${{ github.head_ref }}
+- run: npx tinybird branch delete tmp-ci-${{ github.head_ref }}
 
 # tb CLI
-- run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} branch rm tmp_ci_${{ github.head_ref }}
+- run: tb --host ${{ env.TINYBIRD_HOST }} --token ${{ env.TINYBIRD_TOKEN }} branch rm tmp-ci-${{ github.head_ref }}
 ```
 
 ### Preview with connectors
@@ -179,13 +179,25 @@ Delete preview branches when the PR is closed:
 When your project uses Kafka, S3, or GCS connectors, the `tinybird preview` command doesn't ingest data from connectors in preview branches. To test with connector data, create the branch manually with `--with-connections`:
 
 ```
-tb branch create tmp_ci_my_feature --last-partition --with-connections
+tb branch create tmp-ci-my-feature --last-partition --with-connections
+```
+
+For S3/GCS connectors, import sample data:
+
+```
+tb --branch=tmp-ci-my-feature datasource sample my_datasource --wait
+```
+
+Kafka connections are stopped by default in preview branches. Start them explicitly:
+
+```
+tb --branch=tmp-ci-my-feature datasource start my_kafka_datasource
 ```
 
 ## Key Principles
 
 - Production deploys should happen through CI/CD, not manually.
-- Use Tinybird Local in CI for building and testing, then `tb deploy --check` to validate against Cloud.
+- Use Tinybird Local in CI for building and testing (`tb --local build`, `tb --local test run`), then `tb --cloud deploy --check` to validate against Cloud.
 - Use `--wait` in CD pipelines so the job reflects the actual deployment result.
 - Store the admin token as a CI/CD secret, never in code.
 - Scope CI triggers to Tinybird project file paths to avoid unnecessary runs.

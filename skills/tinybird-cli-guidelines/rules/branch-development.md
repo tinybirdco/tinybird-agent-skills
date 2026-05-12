@@ -16,38 +16,42 @@ For solo development or quick iteration, Tinybird Local (`dev_mode=local`) may b
 ## Branch Workflow
 
 1. Create a git branch for your feature
-2. Create a Tinybird branch (this happens automatically with `tb build` when `dev_mode=branch`, or manually)
-3. Develop and test against the branch
+2. Run `tb dev` — Tinybird automatically creates a Cloud branch matching your git branch name
+3. Develop and test against the branch (file changes are watched and auto-rebuilt)
 4. Push changes and create a PR
 5. Merge to deploy to production
 
 ## Creating Branches
 
-Automatic (recommended when `dev_mode=branch`):
+Automatic (recommended):
 
-```
-tb build
-```
-
-This creates a Cloud branch derived from the current git branch name automatically.
+Check out a git branch and run `tb dev` or `tb build`. Tinybird automatically creates or uses a Cloud branch with the same name as your git branch.
 
 Manual:
 
 ```
-tb branch create my_feature
+tb branch create my-feature
 ```
-
-Branch names must use underscores, not hyphens (e.g., `my_feature`, not `my-feature`).
 
 ### The `--last-partition` Flag
 
 Use `--last-partition` to copy the latest partition of production data into the branch:
 
 ```
-tb branch create my_feature --last-partition
+tb branch create my-feature --last-partition
 ```
 
 This is useful when you need real data to test queries, validate endpoint behavior, or debug issues that depend on production data shapes. Without it, the branch starts empty.
+
+### The `--with-connections` Flag
+
+Use `--with-connections` to enable connectors (Kafka, S3, GCS) in the branch:
+
+```
+tb branch create my-feature --last-partition --with-connections
+```
+
+For S3/GCS, import sample data with `tb --branch=my-feature datasource sample <datasource> --wait`. Kafka connections are stopped by default and need to be started explicitly with `tb --branch=my-feature datasource start <datasource>`.
 
 ## Working with Branch Tokens
 
@@ -56,7 +60,7 @@ After creating a branch, you may need its token to connect client applications (
 List tokens for a branch:
 
 ```
-tb --branch my_feature token ls
+tb --branch my-feature token ls
 ```
 
 ### Using Branch Tokens in Client Apps
@@ -83,17 +87,20 @@ This way, setting or unsetting the branch token switches between branch and prod
 - `tb branch ls`: List all branches
 - `tb branch create <name>`: Create a new branch (empty)
 - `tb branch create <name> --last-partition`: Create a branch with latest production data
+- `tb branch create <name> --last-partition --with-connections`: Create a branch with data and connectors
 - `tb branch rm <name>`: Remove a branch
 - `tb branch clear`: Clear branch state
+- `tb dev`: Start development session (auto-creates branch from git branch name, watches files)
+- `tb --branch <name> open`: Open the branch in the Tinybird UI
 
 ## Targeting a Branch Explicitly
 
 Most commands can target a specific branch with the `--branch` flag:
 
 ```
-tb --branch my_feature endpoint data my_endpoint
-tb --branch my_feature sql "SELECT count() FROM my_datasource"
-tb --branch my_feature token ls
+tb --branch my-feature endpoint data my_endpoint
+tb --branch my-feature sql "SELECT count() FROM my_datasource"
+tb --branch my-feature token ls
 ```
 
 When `dev_mode=branch`, `tb build` targets the branch automatically without needing `--branch`.
