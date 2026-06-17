@@ -37,66 +37,66 @@ full table — that is exactly what makes the pre-filter cheap.
 
 ## Example
 
-Before — `right_table` is scanned in full on every insert:
+Before — `enrichment_table` is scanned in full on every insert:
 
 ```
 NODE mv_node
 SQL >
     SELECT
-        l.key_a,
-        l.key_b,
-        l.event_name,
-        l.event_time,
-        r.right_time AS resolved_time
-    FROM left_source l
-    ASOF LEFT JOIN right_table r
-        ON l.key_a = r.key_a
-        AND l.key_b = r.key_b
-        AND l.join_id = r.join_id
-        AND l.event_time >= r.right_time
-    WHERE l.event_name IN ('event_x', 'event_y')
+        e.tenant_id,
+        e.entity_id,
+        e.event_name,
+        e.event_time,
+        x.source_time AS resolved_time
+    FROM events_table e
+    ASOF LEFT JOIN enrichment_table x
+        ON e.tenant_id = x.tenant_id
+        AND e.entity_id = x.entity_id
+        AND e.ref_id = x.ref_id
+        AND e.event_time >= x.source_time
+    WHERE e.event_name IN ('event_x', 'event_y')
 
 TYPE materialized
 DATASOURCE mv_target
 ```
 
-After — `right_table` is restricted by keys present in the batch and
-by a 30-day time window relative to the batch's event times:
+After — `enrichment_table` is restricted by keys present in the batch
+and by a 30-day time window relative to the batch's event times:
 
 ```
 NODE mv_node
 SQL >
     SELECT
-        l.key_a,
-        l.key_b,
-        l.event_name,
-        l.event_time,
-        r.right_time AS resolved_time
-    FROM left_source l
+        e.tenant_id,
+        e.entity_id,
+        e.event_name,
+        e.event_time,
+        x.source_time AS resolved_time
+    FROM events_table e
     ASOF LEFT JOIN (
-        SELECT key_a, key_b, join_id, right_time
-        FROM right_table
-        WHERE right_time >= (
+        SELECT tenant_id, entity_id, ref_id, source_time
+        FROM enrichment_table
+        WHERE source_time >= (
                 SELECT min(event_time)
-                FROM left_source
+                FROM events_table
                 WHERE event_name IN ('event_x', 'event_y')
             ) - INTERVAL 30 DAY
-          AND right_time <= (
+          AND source_time <= (
                 SELECT max(event_time)
-                FROM left_source
+                FROM events_table
                 WHERE event_name IN ('event_x', 'event_y')
             )
-          AND (key_a, key_b, join_id) IN (
-                SELECT key_a, key_b, join_id
-                FROM left_source
+          AND (tenant_id, entity_id, ref_id) IN (
+                SELECT tenant_id, entity_id, ref_id
+                FROM events_table
                 WHERE event_name IN ('event_x', 'event_y')
             )
-    ) r
-        ON l.key_a = r.key_a
-        AND l.key_b = r.key_b
-        AND l.join_id = r.join_id
-        AND l.event_time >= r.right_time
-    WHERE l.event_name IN ('event_x', 'event_y')
+    ) x
+        ON e.tenant_id = x.tenant_id
+        AND e.entity_id = x.entity_id
+        AND e.ref_id = x.ref_id
+        AND e.event_time >= x.source_time
+    WHERE e.event_name IN ('event_x', 'event_y')
 
 TYPE materialized
 DATASOURCE mv_target
