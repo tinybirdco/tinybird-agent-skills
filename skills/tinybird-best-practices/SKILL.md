@@ -25,6 +25,7 @@ Guidance for Tinybird file formats, SQL rules, optimization patterns, and data m
 - `rules/pipe-files.md`
 - `rules/endpoint-files.md`
 - `rules/materialized-files.md`
+- `rules/materialized-join-prefilter.md`
 - `rules/sink-files.md`
 - `rules/copy-files.md`
 - `rules/connection-files.md`
