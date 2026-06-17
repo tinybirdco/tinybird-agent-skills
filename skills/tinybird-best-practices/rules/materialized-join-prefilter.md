@@ -11,8 +11,7 @@ each insert becomes more expensive and ingestion can stall or fail.
 
 Apply this pattern to any `TYPE materialized` pipe where:
 
-- The right side of a JOIN is a datasource that grows unbounded over time
-  (e.g. `email_sends`, `sms_sends`, `orders`, `sessions`).
+- The right side of a JOIN is a datasource that grows unbounded over time.
 - Symptoms: slow inserts, ingestion lag, memory spikes on the source
   datasource, `MEMORY_LIMIT_EXCEEDED` errors on the MV.
 - The JOIN already has selective conditions (equality on keys, time
@@ -29,86 +28,82 @@ Two filters compose:
 2. **Time pre-filter** — for `ASOF` joins with `left.time >= right.time`,
    bound `right.time` to `[min(left.time) - INTERVAL N <unit>, max(left.time)]`
    of the inserting batch. The lower bound is the **maximum acceptable
-   gap** between the right-side event and the left-side event — make
+   gap** between the right-side row and the left-side row — make
    it an obvious, configurable constant so it can be tuned later.
 
-The left-side reference inside the subquery (`FROM events_landing`)
-resolves to the inserting block, not the full table — that is exactly
-what makes the pre-filter cheap.
+The left-side reference inside the subquery (the same datasource that
+appears in the outer `FROM`) resolves to the inserting block, not the
+full table — that is exactly what makes the pre-filter cheap.
 
 ## Example
 
-Before — `email_sends` is scanned in full on every insert:
+Before — `right_table` is scanned in full on every insert:
 
 ```
-NODE mv_messaging_events_node
+NODE mv_node
 SQL >
     SELECT
-        e.business_id,
-        e.customer_id,
-        e.event_name,
-        e.event_time,
-        es.sent_at AS send_time
-    FROM events_landing e
-    ASOF LEFT JOIN email_sends es
-        ON e.business_id = es.business_id
-        AND e.customer_id = es.customer_id
-        AND toInt64OrZero(toString(e.event.drip_email_id)) = es.drip_email_id
-        AND e.event_time >= es.sent_at
-    WHERE e.event_name LIKE 'email-%'
-       OR e.event_name = 'clicked-link'
+        l.key_a,
+        l.key_b,
+        l.event_name,
+        l.event_time,
+        r.right_time AS resolved_time
+    FROM left_source l
+    ASOF LEFT JOIN right_table r
+        ON l.key_a = r.key_a
+        AND l.key_b = r.key_b
+        AND l.join_id = r.join_id
+        AND l.event_time >= r.right_time
+    WHERE l.event_name IN ('event_x', 'event_y')
 
 TYPE materialized
-DATASOURCE mv_messaging_events
+DATASOURCE mv_target
 ```
 
-After — `email_sends` is restricted by keys present in the batch and
+After — `right_table` is restricted by keys present in the batch and
 by a 30-day time window relative to the batch's event times:
 
 ```
-NODE mv_messaging_events_node
+NODE mv_node
 SQL >
     SELECT
-        e.business_id,
-        e.customer_id,
-        e.event_name,
-        e.event_time,
-        es.sent_at AS send_time
-    FROM events_landing e
+        l.key_a,
+        l.key_b,
+        l.event_name,
+        l.event_time,
+        r.right_time AS resolved_time
+    FROM left_source l
     ASOF LEFT JOIN (
-        SELECT business_id, customer_id, drip_email_id, sent_at
-        FROM email_sends
-        WHERE sent_at >= (
+        SELECT key_a, key_b, join_id, right_time
+        FROM right_table
+        WHERE right_time >= (
                 SELECT min(event_time)
-                FROM events_landing
-                WHERE event_name LIKE 'email-%' OR event_name = 'clicked-link'
+                FROM left_source
+                WHERE event_name IN ('event_x', 'event_y')
             ) - INTERVAL 30 DAY
-          AND sent_at <= (
+          AND right_time <= (
                 SELECT max(event_time)
-                FROM events_landing
-                WHERE event_name LIKE 'email-%' OR event_name = 'clicked-link'
+                FROM left_source
+                WHERE event_name IN ('event_x', 'event_y')
             )
-          AND (business_id, customer_id, drip_email_id) IN (
-                SELECT
-                    business_id,
-                    customer_id,
-                    toInt64OrZero(toString(event.drip_email_id))
-                FROM events_landing
-                WHERE event_name LIKE 'email-%' OR event_name = 'clicked-link'
+          AND (key_a, key_b, join_id) IN (
+                SELECT key_a, key_b, join_id
+                FROM left_source
+                WHERE event_name IN ('event_x', 'event_y')
             )
-    ) es
-        ON e.business_id = es.business_id
-        AND e.customer_id = es.customer_id
-        AND toInt64OrZero(toString(e.event.drip_email_id)) = es.drip_email_id
-        AND e.event_time >= es.sent_at
-    WHERE e.event_name LIKE 'email-%'
-       OR e.event_name = 'clicked-link'
+    ) r
+        ON l.key_a = r.key_a
+        AND l.key_b = r.key_b
+        AND l.join_id = r.join_id
+        AND l.event_time >= r.right_time
+    WHERE l.event_name IN ('event_x', 'event_y')
 
 TYPE materialized
-DATASOURCE mv_messaging_events
+DATASOURCE mv_target
 ```
 
-Repeat the same wrapping for every right-side JOIN (e.g. `sms_sends`).
+Repeat the same wrapping for every right-side JOIN — one independent
+subquery per right-side table.
 
 ## Checklist
 
@@ -120,23 +115,23 @@ Repeat the same wrapping for every right-side JOIN (e.g. `sms_sends`).
       (min(left.time) - INTERVAL N <unit>) AND max(left.time)`.
 - [ ] The `INTERVAL N <unit>` constant is a single, obvious literal —
       not buried in arithmetic — so the maximum gap is tunable.
-- [ ] The `WHERE` filter inside the inner `FROM events_landing`
-      subqueries matches the outer pipe's `WHERE` so the inserting
-      block is read consistently.
+- [ ] The `WHERE` filter inside the inner subqueries over the left-side
+      source matches the outer pipe's `WHERE` so the inserting block is
+      read consistently.
 
 ## Gotchas
 
 - **The lower time bound trades cost for correctness.** Any right-side
   row older than `min(left.time) - N <unit>` will be excluded — even if
   it would have been the correct `ASOF` match. Pick `N` large enough to
-  cover the realistic gap between right-side events (e.g. a send) and
-  the left-side events that reference them (e.g. an open). Document it.
+  cover the realistic gap between right-side rows and the left-side rows
+  that reference them. Document it.
 - **Multiple right-side JOINs need independent pre-filters.** Each
   right-side table has its own keys and time semantics; do not share
   one subquery across them.
-- **`event.field` access inside the inner subquery** must mirror the
-  outer extraction exactly (same `toInt64OrZero(toString(...))` or
-  equivalent), otherwise the `IN` tuple won't match.
+- **Key extraction inside the inner subquery** must mirror the outer
+  extraction exactly (same casts, same `JSONExtract` / `toInt64OrZero`
+  wrappers, etc.), otherwise the `IN` tuple won't match.
 - **The pre-filter does not change MV correctness for in-window data**
   but it does change it for out-of-window data — make this explicit in
   a pipe-level `DESCRIPTION`.
