@@ -101,7 +101,7 @@ Apply only when runtime thresholds are exceeded, based on `pipe_stats_rt` and `E
 
 ### Expensive JSON extraction at query time
 - **When**: p95 > 3s, or CPU > 70%.
-- Fix: Extract JSON fields into typed columns at ingestion time.
+- Fix: Extract JSON fields into typed columns at ingestion time. If many fields are extracted from the same JSON payload (per-field `visitParamExtract*`/`JSONExtract*` calls), see the single-parse JSON pattern in `materialized-files.md` — it applies here too, but matters most in materialized views since the parse cost compounds over every ingested row.
 
 ### Large IN lists
 - **When**: p95 > 3s, or query planning time is high.
