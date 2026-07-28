@@ -83,7 +83,7 @@ DATASOURCE typed_events_ds
 ```
 
 Notes:
-- If a field is not present, the tuple subcolumn will be set to the default value of its type.
+- If a field is not present in the JSON payload, the extracted tuple subcolumn will be set to the default value of its type.
 - If several derived expressions build on the same raw field (e.g. normalizing a path, deriving a domain from a URL), extract that field once into a `WITH` alias and reuse it, instead of re-extracting it inline for each derived expression.
 - Output column names/types should stay identical to the pre-optimization query — this is a query-shape optimization, not a schema change.
 - The same pattern applies to endpoint/pipe queries doing heavy JSON extraction, but the payoff is largest in materialized views since the parse cost compounds over every ingested row rather than every query call.
