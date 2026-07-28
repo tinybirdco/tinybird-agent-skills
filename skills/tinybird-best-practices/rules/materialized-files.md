@@ -37,13 +37,10 @@ ENGINE_SORTING_KEY "date, dimension_1, dimension_2"
 
 ## JSON extraction: parse once, not once per field
 
-Materialized views commonly read a raw JSON/string payload column and extract many fields out of it. Because the MV query runs on every inserted block for the lifetime of the pipe, the cost of how that JSON is parsed is paid continuously — this is the single biggest lever for MV ingestion cost when the source is JSON.
+- **When to apply**: the query calls `JSONExtractString`/`JSONExtractInt`/`JSONExtractBool`/`JSONExtractFloat`/`simpleJSONExtractString`/`visitParam*` multiple times against the same JSON/string column — one call per field. Each call re-parses the raw JSON from scratch, so N fields means N full parses per row. This is most costly in materialized views, since it runs on every inserted block for the pipe's lifetime.
+- **How to apply**: parse the JSON once into a typed `Tuple` with `JSONExtract(...)`, then read each field from it with `getSubcolumn`.
 
-Calling `JSONExtractString`/`JSONExtractInt`/`JSONExtractBool`/`JSONExtractFloat`/`simpleJSONExtractString` (or their `visitParam*` equivalents) once per field re-parses the same raw JSON string from scratch for every field read. With a few dozen fields, that's a few dozen full parses of the same payload per row.
-
-Fix: parse the JSON **once** into a typed `Tuple` with `JSONExtract(...)`, then read every field cheaply from the parsed structure with `getSubcolumn`.
-
-Bad (re-parses the JSON string once per field):
+Bad (one parse per field):
 ```
 NODE typed_events
 SQL >
@@ -59,7 +56,7 @@ TYPE MATERIALIZED
 DATASOURCE typed_events_ds
 ```
 
-Good (parses once, then projects subcolumns):
+Good (one parse total):
 ```
 NODE typed_events
 SQL >
@@ -82,11 +79,8 @@ TYPE MATERIALIZED
 DATASOURCE typed_events_ds
 ```
 
-Notes:
-- If a field is not present in the JSON payload, the extracted tuple subcolumn will be set to the default value of its type.
-- If several derived expressions build on the same raw field (e.g. normalizing a path, deriving a domain from a URL), extract that field once into a `WITH` alias and reuse it, instead of re-extracting it inline for each derived expression.
-- Output column names/types should stay identical to the pre-optimization query — this is a query-shape optimization, not a schema change.
-- The same pattern applies to endpoint/pipe queries doing heavy JSON extraction, but the payoff is largest in materialized views since the parse cost compounds over every ingested row rather than every query call.
+- Missing fields default to their type's default value.
+- Reuse a field via a `WITH` alias if multiple derived expressions depend on it.
 
 ## Usual gotchas
 - Materialized Views work as insert triggers, which means a delete or truncate operation on your original Data Source doesn't affect the related Materialized Views.
