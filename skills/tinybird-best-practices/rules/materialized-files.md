@@ -66,14 +66,14 @@ SQL >
     WITH
         JSONExtract(payload, 'Tuple(
             field_a String,
-            field_b String,
+            field_b Int64,
             field_c Bool,
             field_d String
         )') AS payload_json
     SELECT
         at AS timestamp,
         getSubcolumn(payload_json, 'field_a') AS field_a,
-        toInt64OrZero(getSubcolumn(payload_json, 'field_b')) AS field_b,
+        getSubcolumn(payload_json, 'field_b') AS field_b,
         getSubcolumn(payload_json, 'field_c') AS field_c,
         getSubcolumn(payload_json, 'field_d') AS field_d
     FROM raw_events
@@ -83,8 +83,7 @@ DATASOURCE typed_events_ds
 ```
 
 Notes:
-- Declare numeric/optional fields as `String` in the `Tuple` schema rather than their native numeric type. A missing key then resolves to `''` instead of erroring, and `toXOrZero(...)` / `toXOrDefault(..., fallback)` reproduces the original "extract or fall back" logic — e.g. `toInt32OrDefault(getSubcolumn(payload_json, 'field_b'), -1::Int32)` for a `-1` fallback, or `toInt64OrZero(...)` when the original extractor already defaulted to `0`.
-- Declare fields that are true booleans and always present as their native type (e.g. `Bool`) directly in the `Tuple` — no string round-trip needed.
+- If a field is not present, the tuple subcolumn will be set to the default value of its type.
 - If several derived expressions build on the same raw field (e.g. normalizing a path, deriving a domain from a URL), extract that field once into a `WITH` alias and reuse it, instead of re-extracting it inline for each derived expression.
 - Output column names/types should stay identical to the pre-optimization query — this is a query-shape optimization, not a schema change.
 - The same pattern applies to endpoint/pipe queries doing heavy JSON extraction, but the payoff is largest in materialized views since the parse cost compounds over every ingested row rather than every query call.
