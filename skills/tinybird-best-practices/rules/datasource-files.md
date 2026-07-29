@@ -69,6 +69,23 @@ FORWARD_QUERY >
 
 Once the deploy applies the `FORWARD_QUERY` and the schema change is live, the `FORWARD_QUERY` has done its job. You can remove it from the datafile in a subsequent deploy if no further schema changes are pending. Keeping stale `FORWARD_QUERY` blocks around adds unnecessary complexity.
 
+## TTL and Partition Key Alignment
+
+Apply when a datasource sets both `ENGINE_TTL` and `ENGINE_PARTITION_KEY`: use a partition granularity equal to or finer than the TTL window (e.g. daily partitions for a TTL in days), so partitions expire and drop as whole units instead of ClickHouse rewriting them. A partition coarser than the TTL window (e.g. yearly partitions with a 65-day TTL) never fully expires, forcing constant rewrites instead of cheap drops.
+
+```
+# Bad: yearly partition, 65-day TTL — partition never fully expires
+ENGINE_PARTITION_KEY "toYYYY(timestamp)"
+ENGINE_TTL "toDateTime(timestamp) + toIntervalDay(65)"
+
+# Good: daily partition matches the TTL window — old partitions drop whole
+ENGINE_PARTITION_KEY "toDate(timestamp)"
+ENGINE_TTL "toDate(timestamp) + toIntervalDay(65)"
+ENGINE_SETTINGS "ttl_only_drop_parts=1"
+```
+
+When possible, set `ttl_only_drop_parts=1` in `ENGINE_SETTINGS` — it makes ClickHouse only drop whole expired parts instead of rewriting partially-expired ones, which is much cheaper.
+
 ## Sharing Datasources
 
 ```
