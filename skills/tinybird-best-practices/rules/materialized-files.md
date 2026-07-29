@@ -35,6 +35,53 @@ ENGINE_PARTITION_KEY "toYYYYMM(date)"
 ENGINE_SORTING_KEY "date, dimension_1, dimension_2"
 ```
 
+## JSON extraction: parse once, not once per field
+
+- **When to apply**: the query calls `JSONExtractString`/`JSONExtractInt`/`JSONExtractBool`/`JSONExtractFloat`/`simpleJSONExtractString`/`visitParam*` multiple times against the same JSON/string column — one call per field. Each call re-parses the raw JSON from scratch, so N fields means N full parses per row. This is most costly in materialized views, since it runs on every inserted block for the pipe's lifetime.
+- **How to apply**: parse the JSON once into a typed `Tuple` with `JSONExtract(...)`, then read each field from it with `getSubcolumn`.
+
+Bad (one parse per field):
+```
+NODE typed_events
+SQL >
+    SELECT
+        at AS timestamp,
+        visitParamExtractString(payload, 'field_a') AS field_a,
+        visitParamExtractInt(payload, 'field_b') AS field_b,
+        visitParamExtractBool(payload, 'field_c') AS field_c,
+        simpleJSONExtractString(payload, 'field_d') AS field_d
+    FROM raw_events
+
+TYPE MATERIALIZED
+DATASOURCE typed_events_ds
+```
+
+Good (one parse total):
+```
+NODE typed_events
+SQL >
+    WITH
+        JSONExtract(payload, 'Tuple(
+            field_a String,
+            field_b Int64,
+            field_c Bool,
+            field_d String
+        )') AS payload_json
+    SELECT
+        at AS timestamp,
+        getSubcolumn(payload_json, 'field_a') AS field_a,
+        getSubcolumn(payload_json, 'field_b') AS field_b,
+        getSubcolumn(payload_json, 'field_c') AS field_c,
+        getSubcolumn(payload_json, 'field_d') AS field_d
+    FROM raw_events
+
+TYPE MATERIALIZED
+DATASOURCE typed_events_ds
+```
+
+- Missing fields default to their type's default value.
+- Reuse a field via a `WITH` alias if multiple derived expressions depend on it.
+
 ## Usual gotchas
 - Materialized Views work as insert triggers, which means a delete or truncate operation on your original Data Source doesn't affect the related Materialized Views.
 
